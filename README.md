@@ -53,3 +53,13 @@ Inside the activated virtual environment, install Django:
     ```
    - You can name the project whatever you’d like. In this example, it is named student_wellness_app.
    - The . at the end ensures Django files are created inside the repository folder, not as a nested directory.
+
+---
+
+## Step 5: Verify Setup
+1. Check your folder structure: you should see a `student_wellness_app` (or whatever you named it) directory with essential Django files.
+2. Run the development server to test:
+   ```bash
+   python manage.py runserver
+   
+3. If everything is set up correctly, you should see Django’s default welcome page letting you know the installation was successful in your browser at http://127.0.0.1:8000/.
