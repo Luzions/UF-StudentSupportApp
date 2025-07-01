@@ -1,0 +1,20 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    User Login
+{% endblock %}
+
+{% block content %}
+    <h1 style=" font-family: 'Comic Sans MS'; margin: 0; padding: 0; text-align: center; position: absolute;
+        top: 30%; left: 50%; transform: translateX(-50%) translateY(-50%); font-size: 3rem;"> User Login</h1>
+    <form  class="form-with-validation" action="{% url 'users:login' %}" method="post">
+        {% csrf_token %}
+        {{ form }}
+        {% if request.GET.next %}
+            <input type="hidden" name="next" value="{{ request.GET.next }}"/>
+        {% endif %} 
+        <button style=" padding: 0.5rem;border-radius: 5px;width: 100px;position: absolute;top: 112%;left: 50%;
+            transform: translateX(-50%) translateY(-50%);">Login</button>
+    </form>
+
+{% endblock %}
