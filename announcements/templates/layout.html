@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>
+        {% block title %}
+            Django App
+        {% endblock %}
+    </title>
+    <link rel="stylesheet" href="{% static 'CSS/style.css' %}">
+    <script src="{% static 'JS/main.js' %}" defer></script>
+</head>
+<body>
+    <nav>
+        <a href="/"> Home |</a>
+
+        <a href="{% url 'posts:list' %}"> 🔔 Announcements |</a>
+
+        <a href="/about"> About |</a>
+
+        {% if user.is_authenticated %}
+        	<a href="{% url 'posts:new-post' %}">🆕NewPost |</a>
+            <form class="logout" action="{% url 'users:logout' %}" method="post">
+                {% csrf_token %}
+                <button class="logout-button"> Logout </button >
+            </form>
+        {% else %}
+
+            <a style="float: right; text-align: center;"  href="{% url 'users:login' %}"> Login</a>
+            <a href="{% url 'users:register' %}"> ®️Register |</a>
+
+        {% endif %}
+
+    </nav>
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+</body>
+</html>
