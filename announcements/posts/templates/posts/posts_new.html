@@ -1,0 +1,19 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    New Post
+{% endblock %}
+
+{% block content %}
+    <section>
+        <h1 style=" font-family:'Comic Sans MS'; margin: 0; padding: 0; text-align: center; position: absolute;
+        top: 15%; left: 50%; transform: translateX(-50%) translateY(-50%); font-size: 3rem"> New Post</h1>
+        <form class="form-with-validation" action="{% url 'posts:new-post' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form }}
+            <button class="form-submit">Post</button>
+        </form>
+    </section>
+
+
+{% endblock %}
