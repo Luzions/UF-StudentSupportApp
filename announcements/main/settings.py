@@ -9,6 +9,9 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
+
+print("Django loaded settings from announcements.main.settings")
+
 from pathlib import Path
 from urllib.request import localhost
 
@@ -37,8 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'posts',
-    'users',
+    'announcements.posts',
+    'announcements.users',
 ]
 
 MIDDLEWARE = [
@@ -51,7 +54,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'Engineering_Demo.urls'
+ROOT_URLCONF = 'announcements.main.urls'
 
 TEMPLATES = [
     {
@@ -69,7 +72,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'Engineering_Demo.wsgi.application'
+WSGI_APPLICATION = 'announcements.main.wsgi.application'
 
 
 # Database
