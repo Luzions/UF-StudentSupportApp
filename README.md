@@ -1,3 +1,4 @@
+```markdown
 # UF-StudentSupportApp
 
 This application serves as a personal wellness companion for UF students, designed to improve mental health, self-care habits, and time management. By offering daily check-ins, stress management tools, goal tracking, and peer support, the app provides an interactive way for students to maintain balance amidst academic and personal responsibilities.
@@ -43,7 +44,18 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-> **Note:** If you don’t have a `requirements.txt` yet, run `pip install django Pillow djangorestframework django-cors-headers` and then `pip freeze > requirements.txt`.
+> **Note:** If you don’t have a `requirements.txt` yet, run  
+> `pip install django Pillow djangorestframework django-cors-headers`  
+> then  
+> `pip freeze > requirements.txt`.
+
+> **CORS Setup:**  
+> In `settings.py`, add the following to allow React to access the Django API:
+> ```python
+> CORS_ALLOWED_ORIGINS = [
+>     "http://localhost:3000",
+> ]
+> ```
 
 ### 4. Apply database migrations
 
@@ -75,7 +87,7 @@ npx create-react-app frontend
 
 ```bash
 cd frontend
-npm install axios
+npm install axios react-scripts@5.0.1
 ```
 
 > Use Axios (or `fetch`) to call your Django API.
@@ -113,12 +125,11 @@ When building components, React will fetch data from your Django endpoints. Make
   git checkout -b feature/your-feature development
   git push origin feature/your-feature
   ```
-- Deployment (Coming Soon)
-While this app currently runs in a local development environment using React and Django, future plans include publishing it online so others can easily access and use it. We'll likely explore deployment platforms such as Heroku, Vercel, or Docker, which can help:
-- Keep everyone’s setup consistent by containerizing the project (so it runs the same across all machines)
-- Host both the frontend and backend so users can interact with the app from anywhere
-- Enable automatic updates and version control using Git integratio
-
+- Deployment (Coming Soon)  
+  While this app currently runs in a local development environment using React and Django, future plans include publishing it online so others can easily access and use it. We'll likely explore deployment platforms such as Heroku, Vercel, or Docker, which can help:
+  - Keep everyone’s setup consistent by containerizing the project (so it runs the same across all machines)
+  - Host both the frontend and backend so users can interact with the app from anywhere
+  - Enable automatic updates and version control using Git integration
 
 ---
-
+```
