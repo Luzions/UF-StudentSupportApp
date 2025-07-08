@@ -1,4 +1,6 @@
 
+###  Updated README with Node Version Note
+
 # UF-StudentSupportApp
 
 This application serves as a personal wellness companion for UF students, designed to improve mental health, self-care habits, and time management. By offering daily check-ins, stress management tools, goal tracking, and peer support, the app provides an interactive way for students to maintain balance amidst academic and personal responsibilities.
@@ -102,6 +104,21 @@ The frontend will be available at http://localhost:3000/.
 
 ---
 
+## Node.js Version (⚠️ Important for Compatibility)
+
+If you're using `react-scripts`, `webpack`, or `react-router-dom`, avoid using Node versions newer than 20. Some packages may fail to install or run properly in Node 22+.
+
+> ✅ Recommended version: **Node 18 LTS**  
+> Install using [nvm for Windows](https://github.com/coreybutler/nvm-windows) or `nvm` on macOS/Linux:
+> ```bash
+> nvm install 18
+> nvm use 18
+> ```
+
+If you're getting errors like `"Module not found: react-router-dom"` even after installing it, double-check that you're running Node 18 and reinstall your dependencies.
+
+---
+
 ## Running the Full Stack
 
 You’ll have two servers running:
@@ -133,3 +150,4 @@ When building components, React will fetch data from your Django endpoints. Make
 
 ---
 ```
+
