@@ -16,19 +16,24 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include, re_path
-from . import views
+# from . import views -- old to be removed
 from django.conf.urls.static import static
 from django.conf import settings
 from django.views.static import serve
+
+from . import api_views
 
 urlpatterns = [
     re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
     re_path(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}),
     path('admin/', admin.site.urls),
-    path('', views.homepage, name='homepage'),
-    path('about/', views.about, name='about'),
+    #path('', views.homepage, name='homepage'),
+    #path('about/', views.about, name='about'),
     path('posts/', include('announcements.posts.urls')),
     path('users/', include('announcements.users.urls')),
+    path('api/register/', api_views.register_user, name='register'),
+    path('api/login/', api_views.login_user, name='login'),
+
 ]
 
 #urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

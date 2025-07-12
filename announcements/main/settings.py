@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'announcements.posts',
     'announcements.users',
+    'announcements.main',
+
     'rest_framework',
     'corsheaders',
 

@@ -4,7 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1bdbd5f2-b675-4f04-ba9a-576ef75b13b9" name="Changes" comment="" />
+    <list default="true" id="1bdbd5f2-b675-4f04-ba9a-576ef75b13b9" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/announcements/main/api_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/announcements/main/api_views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/announcements/main/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/announcements/main/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/announcements/main/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/announcements/main/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/announcements/main/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/announcements/main/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/api/api.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/api.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/RegisterPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/RegisterPage.js" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -16,9 +24,9 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 0
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
   <component name="ProjectId" id="2xxfYQEkYirhFAAxOoD2uRRVXZ9" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -28,7 +36,7 @@
   "keyToString": {
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "development"
+    "git-widget-placeholder": "feature/api-user-registration"
   }
 }]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
