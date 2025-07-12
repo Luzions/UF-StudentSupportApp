@@ -1,4 +1,5 @@
 // src/pages/RegisterPage.jsx
+import { registerUser } from "../api/api";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import ufLogo from "../assets/uf-logo.png";
@@ -145,10 +146,68 @@ export default function RegisterPage() {
   const [selectedCollege, setSelectedCollege] = useState("");
   const [departments, setDepartments] = useState([]);
 
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    username: "",
+    college: "",
+    department: "",
+    role: "",
+    password: "",
+    confirmPassword: "",
+  });
+
   const handleCollegeChange = (e) => {
     const college = e.target.value;
     setSelectedCollege(college);
     setDepartments(collegeDepartmentData[college] || []);
+    setFormData({ ...formData, college });
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log("Submit handler triggered!");
+    alert("Submitting form...");
+
+    if (!formData.username || !formData.password || !formData.email) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match.");
+      return;
+    }
+    try {
+      const payload = {
+        username: formData.username,
+        password: formData.password,
+        email: formData.email,
+        role: formData.role,
+        college: formData.college,
+        department: formData.department,
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        phone: formData.phone,
+      };
+
+      console.log("Payload:", payload); // Debugging line to check payload
+      const response = await registerUser(payload);
+      console.log("Success:", response);
+      alert("Account created successfully!"); // Visual feedback
+
+      // Optionally redirect or show confirmation
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Submission failed! Check console for error."); // UI fallback
+    }
   };
 
   return (
@@ -203,18 +262,44 @@ export default function RegisterPage() {
           Create your account
         </p>
 
-        <form>
-          {[
-            "First Name",
-            "Last Name",
-            "Email Address",
-            "Phone Number (Optional)",
-            "Username",
-          ].map((placeholder, i) => (
-            <input key={i} placeholder={placeholder} style={inputStyle} />
-          ))}
+        <form onSubmit={handleSubmit}>
+          <input
+            name="firstName"
+            value={formData.firstName}
+            onChange={handleChange}
+            placeholder="First Name"
+            style={inputStyle}
+          />
+          <input
+            name="lastName"
+            value={formData.lastName}
+            onChange={handleChange}
+            placeholder="Last Name"
+            style={inputStyle}
+          />
+          <input
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="Email Address"
+            style={inputStyle}
+          />
+          <input
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            placeholder="Phone Number (Optional)"
+            style={inputStyle}
+          />
+          <input
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
+            placeholder="Username"
+            style={inputStyle}
+          />
 
-          <select onChange={handleCollegeChange} style={inputStyle}>
+          <select value={formData.college} onChange={handleCollegeChange} style={inputStyle}>
             <option value="">Select College</option>
             {Object.keys(collegeDepartmentData).map((college) => (
               <option key={college} value={college}>
@@ -223,7 +308,12 @@ export default function RegisterPage() {
             ))}
           </select>
 
-          <select style={inputStyle}>
+          <select
+            name="department"
+            value={formData.department}
+            onChange={handleChange}
+            style={inputStyle}
+          >
             <option value="">Select Department</option>
             {departments.map((dept) => (
               <option key={dept} value={dept}>
@@ -232,32 +322,38 @@ export default function RegisterPage() {
             ))}
           </select>
 
-          <select style={inputStyle}>
+          <select
+            name="role"
+            value={formData.role}
+            onChange={handleChange}
+            style={inputStyle}
+          >
             <option value="">Select Role</option>
             <option value="student">Student</option>
             <option value="counselor">Counselor</option>
             <option value="admin">Admin</option>
           </select>
 
-          <input type="password" placeholder="Password" style={inputStyle} />
           <input
             type="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            placeholder="Password"
+            style={inputStyle}
+          />
+          <input
+            type="password"
+            name="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={handleChange}
             placeholder="Confirm Password"
             style={inputStyle}
           />
 
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              marginBottom: "1rem",
-            }}
-          >
-            <input type="checkbox" id="tos" />
-            <label
-              htmlFor="tos"
-              style={{ marginLeft: "0.5rem", color: "#666" }}
-            >
+          <div style={{ display: "flex", alignItems: "center", marginBottom: "1rem" }}>
+            <input type="checkbox" id="tos" required />
+            <label htmlFor="tos" style={{ marginLeft: "0.5rem", color: "#666" }}>
               I agree to the <Link to="#">Terms of Service</Link> and{" "}
               <Link to="#">Privacy Policy</Link>
             </label>
