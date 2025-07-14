@@ -6,7 +6,8 @@ export default function HomePage() {
   const styles = {
     container: {
       fontFamily: "'Segoe UI', sans-serif",
-      backgroundColor: "#0021A5", // UF blue
+      //backgroundColor: "#0021A5", // UF blue
+      background: "linear-gradient(45deg, #003366, #1a1a2e, #000080)",
       color: "white",
       minHeight: "100vh",
       width: "100vw",
@@ -106,7 +107,7 @@ export default function HomePage() {
           <Link to="/wellness" style={styles.navLink}>
             Mental Wellness
           </Link>
-          <Link to="/alerts" style={styles.navLink}>
+          <Link to="/alertsResources" style={styles.navLink}>
             Alerts & Resources
           </Link>
           <Link to="/about" style={styles.navLink}>
