@@ -48,7 +48,7 @@ def register_user(request):
             department=department
         )
 
-        return JsonResponse({'message': 'User and profile created successfully'})
+        return JsonResponse({'message': 'User and profile created successfully.'})
 
     except Exception as e:
         import traceback
@@ -60,3 +60,38 @@ def register_user(request):
 def login_user(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'POST requests only'}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        username = data.get('username')
+        password = data.get('password')
+
+        user = authenticate(username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+
+            try:
+                user_profile = UserProfile.objects.get(user=user)
+                return JsonResponse({
+                    "message": "Login successful",
+                    "role": user_profile.role,
+                    "first_name": user_profile.first_name,
+                    "full_name": user.get_full_name(),
+                    "college": user_profile.college
+                })
+
+            except UserProfile.DoesNotExist:
+                return JsonResponse({
+                    "message": "Login successful",
+                    "role": "unknown"
+                })
+
+        else:
+            return JsonResponse({'error': 'Invalid credentials'}, status=401)
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({'error': f'Login failed: {str(e)}'}, status=500)
+

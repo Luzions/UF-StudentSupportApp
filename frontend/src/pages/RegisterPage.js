@@ -3,6 +3,7 @@ import { registerUser } from "../api/api";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import ufLogo from "../assets/uf-logo.png";
+import { useNavigate } from "react-router-dom";
 
 const collegeDepartmentData = {
   "College of Agricultural and Life Sciences": [
@@ -145,6 +146,9 @@ const inputStyle = {
 export default function RegisterPage() {
   const [selectedCollege, setSelectedCollege] = useState("");
   const [departments, setDepartments] = useState([]);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const navigate = useNavigate();
+
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -158,6 +162,8 @@ export default function RegisterPage() {
     password: "",
     confirmPassword: "",
   });
+
+
 
   const handleCollegeChange = (e) => {
     const college = e.target.value;
@@ -202,6 +208,14 @@ export default function RegisterPage() {
       const response = await registerUser(payload);
       console.log("Success:", response);
       alert("Account created successfully!"); // Visual feedback
+
+      if (response.message === "User and profile created successfully.") {
+      // Optional: Show success message for a second
+        setShowSuccess(true);
+        setTimeout(() => {
+        navigate("/login");
+        }, 1500); //
+      }
 
       // Optionally redirect or show confirmation
     } catch (error) {
@@ -262,6 +276,22 @@ export default function RegisterPage() {
           Create your account
         </p>
 
+        {/* ✅ Success Message */}
+        {showSuccess && (
+            <div style={{
+                backgroundColor: "#d4edda",
+                padding: "1rem",
+                margin: "0 auto 2rem auto",   // This gives top/bottom space + horizontal centering
+
+                borderRadius: "5px",
+                color: "#155724"
+             }}>
+          ✅ Account created successfully! Redirecting to login...
+            </div>
+        )}
+
+
+        {/* ✅ Main Form */}
         <form onSubmit={handleSubmit}>
           <input
             name="firstName"
@@ -299,29 +329,6 @@ export default function RegisterPage() {
             style={inputStyle}
           />
 
-          <select value={formData.college} onChange={handleCollegeChange} style={inputStyle}>
-            <option value="">Select College</option>
-            {Object.keys(collegeDepartmentData).map((college) => (
-              <option key={college} value={college}>
-                {college}
-              </option>
-            ))}
-          </select>
-
-          <select
-            name="department"
-            value={formData.department}
-            onChange={handleChange}
-            style={inputStyle}
-          >
-            <option value="">Select Department</option>
-            {departments.map((dept) => (
-              <option key={dept} value={dept}>
-                {dept}
-              </option>
-            ))}
-          </select>
-
           <select
             name="role"
             value={formData.role}
@@ -331,8 +338,35 @@ export default function RegisterPage() {
             <option value="">Select Role</option>
             <option value="student">Student</option>
             <option value="counselor">Counselor</option>
-            <option value="admin">Admin</option>
+
           </select>
+
+
+          <select value={formData.college} onChange={handleCollegeChange} style={inputStyle}>
+            <option value="">Select College</option>
+            {Object.keys(collegeDepartmentData).map((college) => (
+              <option key={college} value={college}>
+                {college}
+              </option>
+            ))}
+          </select>
+
+          {formData.role === "student" && (
+            <select
+            name="department"
+            value={formData.department}
+            onChange={handleChange}
+            style={inputStyle}
+            >
+            <option value="">Select Department</option>
+            {departments.map((dept) => (
+            <option key={dept} value={dept}>
+                {dept}
+            </option>
+            ))}
+            </select>
+          )}
+
 
           <input
             type="password"
