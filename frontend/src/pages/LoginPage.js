@@ -2,17 +2,38 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logoImg from "../assets/logo-Image.jpg";
 import { Link } from "react-router-dom";
+import { loginUser } from "../api/api"; //  api.js
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Logging in:", username);
-    navigate("/");
-  };
+
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const response = await loginUser({ username, password });
+
+    // Save to localStorage for use in Dashboard
+    localStorage.setItem("username", username);
+    localStorage.setItem("role", response.role);
+    localStorage.setItem("first_name", response.first_name);
+    localStorage.setItem("full_name", response.full_name);
+    localStorage.setItem("college", response.college);
+
+    alert(response.message || "Login successful");
+
+    if (response.role === "admin" || response.role === "counselor") {
+      navigate("/admin-dashboard");
+    } else {
+      navigate("/student-dashboard");
+    }
+  } catch (err) {
+    alert(err?.response?.data?.error || "Login failed");
+  }
+};
 
   const styles = {
     container: {
@@ -134,9 +155,9 @@ export default function LoginPage() {
             <label>
               <input type="checkbox" /> Remember me
             </label>
-            <a href="#" style={styles.link}>
-              Forgot password?
-            </a>
+            <button type="button" style={styles.link}>
+                Forgot password?
+            </button>
           </div>
 
           <button type="submit" style={styles.button}>
