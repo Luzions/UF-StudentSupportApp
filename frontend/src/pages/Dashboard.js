@@ -1,6 +1,6 @@
 // src/pages/Dashboard.js
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function Dashboard() {
   const fullName = localStorage.getItem("full_name");
@@ -111,9 +111,7 @@ export default function Dashboard() {
         <span style={styles.topLink} onClick={handleLogout}>
           Logout
         </span>
-        <span style={styles.topLink}>
-          Account Settings
-        </span>
+        <span style={styles.topLink}>Account Settings</span>
       </div>
 
       <div style={styles.content}>
@@ -127,29 +125,22 @@ export default function Dashboard() {
         </header>
 
         <div style={styles.featureGrid}>
-          <div
-            style={styles.featureCard}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.transform = "scale(1.02)")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.transform = "scale(1)")
-            }
+          <Link
+            to="/gpa-tracker"
+            style={{ ...styles.featureCard, textDecoration: "none", color: "inherit" }}
+            onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.02)")}
+            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
           >
             <h3 style={styles.featureTitle}>GPA Tracking</h3>
             <p style={styles.featureDescription}>
               Track your GPA and monitor course progress.
             </p>
-          </div>
+          </Link>
 
           <div
             style={styles.featureCard}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.transform = "scale(1.02)")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.transform = "scale(1)")
-            }
+            onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.02)")}
+            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
           >
             <h3 style={styles.featureTitle}>Wellness Support</h3>
             <p style={styles.featureDescription}>
@@ -159,12 +150,8 @@ export default function Dashboard() {
 
           <div
             style={styles.featureCard}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.transform = "scale(1.02)")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.transform = "scale(1)")
-            }
+            onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.02)")}
+            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
           >
             <h3 style={styles.featureTitle}>Course Mapping</h3>
             <p style={styles.featureDescription}>
