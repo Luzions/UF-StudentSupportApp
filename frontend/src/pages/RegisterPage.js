@@ -1,428 +1,699 @@
-// src/pages/RegisterPage.jsx
-import { registerUser } from "../api/api";
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import ufLogo from "../assets/uf-logo.png";
-import { useNavigate } from "react-router-dom";
+// src/pages/Dashboard.js
+import React, { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
 
-const collegeDepartmentData = {
-  "College of Agricultural and Life Sciences": [
-    "Agricultural and Biological Engineering",
-    "Agricultural Education and Communication",
-    "Agronomy",
-    "Animal Sciences",
-    "CALS Interdisciplinary Program",
-    "Entomology and Nematology",
-    "Family, Youth and Community Sciences",
-    "Food and Resource Economics",
-    "Food Science and Human Nutrition",
-    "Horticultural Sciences",
-    "Microbiology and Cell Science",
-    "Plant Molecular and Cellular Biology",
-    "Plant Pathology",
-    "School of Forest, Fisheries, and Geomatics Sciences",
-    "School of Natural Resources and Environment",
-    "Soil, Water, and Ecosystem Sciences",
-    "Wildlife Ecology and Conservation",
-  ],
-  "College of the Arts": [
-    "College of the Arts Interdisciplinary Program",
-    "Digital Worlds Institute",
-    "School of Art and Art History",
-    "School of Music",
-    "School of Theatre and Dance",
-  ],
-  "Warrington College of Business": [
-    "College of Business Interdisciplinary Programs in Business Administration",
-    "Finance, Insurance, and Real Estate",
-    "Fisher School of Accounting",
-    "Information Systems and Operations Management",
-    "Management",
-    "Marketing",
-  ],
-  "College of Dentistry": ["Dental Sciences"],
-  "College of Design, Construction and Planning": [
-    "DCP Interdisciplinary Programs",
-    "Interior Design",
-    "Landscape Architecture",
-    "M. E. Rinker, Sr. School of Construction Management",
-    "School of Architecture",
-    "Urban and Regional Planning",
-  ],
-  "College of Education": [
-    "Human Development and Organizational Studies in Education",
-    "School of Teaching and Learning",
-    "Special Education, School Psychology and Early Childhood Studies",
-  ],
-  "Herbert Wertheim College of Engineering": [
-    "Agricultural and Biological Engineering",
-    "Chemical Engineering",
-    "Civil and Coastal Engineering",
-    "Computer and Information Science and Engineering",
-    "Electrical and Computer Engineering",
-    "Engineering Education",
-    "Environmental Engineering Sciences",
-    "Industrial and Systems Engineering",
-    "J. Crayton Pruitt Family Department of Biomedical Engineering",
-    "Materials Science and Engineering",
-    "Mechanical and Aerospace Engineering",
-    "Nuclear and Radiological Engineering",
-  ],
-  "College of Health and Human Performance": [
-    "Applied Physiology and Kinesiology",
-    "Health Education and Behavior",
-    "Health and Human Performance",
-    "Sport Management",
-    "Tourism, Hospitality and Event Management",
-  ],
-  "College of Journalism and Communications": ["Mass Communication"],
-  "College of Liberal Arts and Sciences": [
-    "Anthropology",
-    "Astronomy",
-    "Biology",
-    "Center for Latin American Studies",
-    "Chemistry",
-    "Classics",
-    "Computer and Information Science and Engineering",
-    "Languages, Literatures and Cultures",
-    "Economics",
-    "English",
-    "Gender, Sexuality, and Women's Studies",
-    "Geography",
-    "Geological Sciences",
-    "History",
-    "Interdisciplinary Department",
-    "Linguistics",
-    "Mathematics",
-    "Philosophy",
-    "Physics",
-    "Plant Molecular and Cellular Biology",
-    "Political Science",
-    "Psychology",
-    "Religion",
-    "Sociology and Criminology & Law",
-    "Spanish and Portuguese Studies",
-    "Statistics",
-  ],
-  "College of Medicine": [
-    "Biochemistry and Molecular Biology",
-    "Biostatistics",
-    "Epidemiology",
-    "Health Outcomes and Biomedical Informatics",
-    "Molecular Genetics and Microbiology",
-    "College of Medicine Interdisciplinary Programs",
-  ],
-  "College of Nursing": ["Nursing Sciences"],
-  "College of Pharmacy": [
-    "Medicinal Chemistry",
-    "Pharmaceutical Outcomes and Policy",
-    "Pharmaceutics",
-    "Pharmacodynamics",
-    "Pharmacotherapy and Translational Research",
-  ],
-  "College of Public Health and Health Professions": [
-    "Biostatistics",
-    "Clinical and Health Psychology",
-    "Environmental and Global Health",
-    "Epidemiology",
-    "Health Services Research, Management and Policy",
-    "Speech, Language, and Hearing Sciences",
-  ],
-  "College of Veterinary Medicine": ["Veterinary Medical Sciences"],
-};
+// ============= ICON IMPORTS FROM ASSETS FOLDER =============
+// Role icons only
+import studentRoleIcon from "../assets/student-role-icon.png";
+import counselorRoleIcon from "../assets/counselor-role-icon.png";
+import adminRoleIcon from "../assets/admin-role-icon.png";
 
-// Common input/select styles
-const inputStyle = {
-  width: "100%",
-  marginBottom: "1rem",
-  padding: "1rem",
-  fontSize: "1rem",
-  border: "1px solid #ddd",
-  borderRadius: "5px",
-  boxSizing: "border-box",
-  fontFamily: "inherit",
-};
+export default function Dashboard() {
+  // ============= GET REAL USER DATA FROM LOCALSTORAGE =============
+  const fullName = localStorage.getItem("full_name");
+  const role = localStorage.getItem("role");
+  const college = localStorage.getItem("college");
 
-export default function RegisterPage() {
-  const [selectedCollege, setSelectedCollege] = useState("");
-  const [departments, setDepartments] = useState([]);
-  const [showSuccess, setShowSuccess] = useState(false);
+  // Additional user data that might be stored (add these to your login process if not already stored)
+  const studentId = localStorage.getItem("student_id");
+  const employeeId = localStorage.getItem("employee_id");
+  const major = localStorage.getItem("major");
+  const year = localStorage.getItem("year");
+  const department = localStorage.getItem("department");
+  const specialization = localStorage.getItem("specialization");
+  const accessLevel = localStorage.getItem("access_level");
+  const gpa = localStorage.getItem("gpa");
+  const credits = localStorage.getItem("credits");
+  const assignedStudents = localStorage.getItem("assigned_students");
+  const totalUsers = localStorage.getItem("total_users");
+
   const navigate = useNavigate();
 
+  // ============= REMOVED DEMO DATA SECTION =============
+  // const sampleUsers = { ... } // REMOVED - we're using real user data now
+  // const [currentUser, setCurrentUser] = useState(...) // REMOVED - no role switching in production
+  // const [userData, setUserData] = useState(...) // REMOVED - using localStorage directly
 
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    username: "",
-    college: "",
-    department: "",
-    role: "",
-    password: "",
-    confirmPassword: "",
+  // ============= NEW STATE MANAGEMENT FOR REAL APP =============
+  const [userPreferences, setUserPreferences] = useState({
+    theme: localStorage.getItem("theme") || "light",
+    dashboardLayout: localStorage.getItem("dashboardLayout") || "grid",
+    notifications: localStorage.getItem("notifications") === "true" || true,
   });
 
+  // UI State
+  const [currentTab, setCurrentTab] = useState("dashboard");
+  const [selectedFeature, setSelectedFeature] = useState(null);
 
+  // REMOVED: Settings modal and time state - no longer needed
+  // const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  // const [currentTime, setCurrentTime] = useState(new Date());
 
-  const handleCollegeChange = (e) => {
-    const college = e.target.value;
-    setSelectedCollege(college);
-    setDepartments(collegeDepartmentData[college] || []);
-    setFormData({ ...formData, college });
+  // REMOVED: Time update effect - no longer needed
+  // useEffect(() => {
+  //   const timer = setInterval(() => setCurrentTime(new Date()), 60000);
+  //   return () => clearInterval(timer);
+  // }, []);
+
+  // ============= ROLE-BASED FEATURES (Updated without icons) =============
+  const roleFeatures = {
+    student: [
+      {
+        title: "GPA Tracking",
+        description:
+          "Track your GPA and monitor course progress throughout your academic journey.",
+        color: "#10B981",
+        stats: gpa ? `Current GPA: ${gpa}` : "GPA not available",
+        route: "/gpa-tracker",
+      },
+      {
+        title: "Wellness Support",
+        description:
+          "Access mental health resources, mood tracking, and wellness check-ins.",
+        color: "#8B5CF6",
+        stats: "Last check-in: 2 days ago",
+        route: "/wellness",
+      },
+      {
+        title: "Course Mapping",
+        description:
+          "Plan your degree path with intelligent course recommendations and prerequisites.",
+        color: "#F59E0B",
+        stats: credits ? `${credits} credits` : "Credits not available",
+        route: "/course-mapping",
+      },
+      {
+        title: "Academic Calendar",
+        description:
+          "View important dates, deadlines, and schedule appointments with advisors.",
+        color: "#EF4444",
+        stats: "3 upcoming deadlines",
+        route: "/calendar",
+      },
+      {
+        title: "Alerts & Resources",
+        description:
+          "View important alerts and access academic resources and support materials.",
+        color: "#FF6B35",
+        stats: "5 new alerts",
+        route: "/AlertsResources",
+      },
+    ],
+    counselor: [
+      {
+        title: "Student Management",
+        description:
+          "View and manage your assigned students' academic progress and wellness.",
+        color: "#3B82F6",
+        stats: assignedStudents
+          ? `${assignedStudents} assigned students`
+          : "No students assigned",
+        route: "/student-management",
+      },
+      {
+        title: "Wellness Dashboard",
+        description:
+          "Monitor student wellness metrics and intervention recommendations.",
+        color: "#10B981",
+        stats: "12 students need attention",
+        route: "/wellness-dashboard",
+      },
+      {
+        title: "Appointment Scheduling",
+        description:
+          "Manage your calendar and schedule meetings with students.",
+        color: "#F59E0B",
+        stats: "8 appointments this week",
+        route: "/appointments",
+      },
+      {
+        title: "Resource Library",
+        description:
+          "Access counseling resources, guides, and intervention strategies.",
+        color: "#8B5CF6",
+        stats: "127 resources available",
+        route: "/resources",
+      },
+      {
+        title: "Reports & Analytics",
+        description:
+          "Generate reports on student progress and wellness trends.",
+        color: "#EF4444",
+        stats: "5 reports pending",
+        route: "/reports",
+      },
+      {
+        title: "Alerts & Resources",
+        description:
+          "View important alerts and access academic resources and support materials.",
+        color: "#FF6B35",
+        stats: "3 system alerts",
+        route: "/AlertsResources",
+      },
+    ],
+    admin: [
+      {
+        title: "User Management",
+        description:
+          "Manage student, counselor, and admin accounts across the system.",
+        color: "#6B7280",
+        stats: totalUsers
+          ? `${totalUsers} total users`
+          : "User count not available",
+        route: "/user-management",
+      },
+      {
+        title: "System Analytics",
+        description:
+          "View comprehensive analytics across all users and departments.",
+        color: "#3B82F6",
+        stats: "98.7% system uptime",
+        route: "/analytics",
+      },
+      {
+        title: "College Management",
+        description:
+          "Manage college information, departments, and organizational structure.",
+        color: "#10B981",
+        stats: "16 colleges active",
+        route: "/college-management",
+      },
+      {
+        title: "Course Catalog",
+        description:
+          "Manage course offerings, prerequisites, and academic requirements.",
+        color: "#F59E0B",
+        stats: "2,347 courses listed",
+        route: "/course-catalog",
+      },
+      {
+        title: "System Settings",
+        description:
+          "Configure system-wide settings, permissions, and security.",
+        color: "#8B5CF6",
+        stats: "All systems operational",
+        route: "/system-settings",
+      },
+      {
+        title: "Backup & Security",
+        description:
+          "Manage data backups, security protocols, and system maintenance.",
+        color: "#EF4444",
+        stats: "Daily backup: Complete",
+        route: "/security",
+      },
+      {
+        title: "Alerts & Resources",
+        description:
+          "View important alerts and access academic resources and support materials.",
+        color: "#FF6B35",
+        stats: "7 system alerts",
+        route: "/AlertsResources",
+      },
+    ],
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  // ============= HANDLERS =============
+  const handleFeatureClick = (feature) => {
+    setSelectedFeature(feature);
+    // Navigate to the feature route instead of just console.log
+    if (feature.route) {
+      navigate(feature.route);
+    }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log("Submit handler triggered!");
-    alert("Submitting form...");
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/login");
+  };
 
-    if (!formData.username || !formData.password || !formData.email) {
-      alert("Please fill in all required fields.");
-      return;
-    }
+  // REMOVED: Settings handlers - no longer needed
+  // const toggleSettings = () => {
+  //   setIsSettingsModalOpen(!isSettingsModalOpen);
+  // };
 
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match.");
-      return;
-    }
-    try {
-      const payload = {
-        username: formData.username,
-        password: formData.password,
-        email: formData.email,
-        role: formData.role,
-        college: formData.college,
-        department: formData.department,
-        first_name: formData.firstName,
-        last_name: formData.lastName,
-        phone: formData.phone,
-      };
+  // const handleSaveSettings = () => {
+  //   localStorage.setItem("theme", userPreferences.theme);
+  //   localStorage.setItem("dashboardLayout", userPreferences.dashboardLayout);
+  //   localStorage.setItem("notifications", userPreferences.notifications.toString());
+  //   console.log("Settings saved:", userPreferences);
+  //   setIsSettingsModalOpen(false);
+  //   alert("Settings saved successfully!");
+  // };
 
-      console.log("Payload:", payload); // Debugging line to check payload
-      const response = await registerUser(payload);
-      console.log("Success:", response);
-      alert("Account created successfully!"); // Visual feedback
+  // ============= STYLES (Enhanced version of your original styles) =============
+  const styles = {
+    container: {
+      fontFamily: "'Inter', 'Segoe UI', sans-serif",
+      background: "linear-gradient(135deg, #FA4616 0%, #0021A5 100%)",
+      minHeight: "100vh",
+      padding: "1rem",
+      boxSizing: "border-box",
+    },
+    topBar: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: "1rem",
+      backgroundColor: "rgba(255, 255, 255, 0.1)",
+      padding: "0.75rem 1.5rem",
+      borderRadius: "12px",
+      backdropFilter: "blur(10px)",
+      border: "1px solid rgba(255, 255, 255, 0.2)",
+    },
+    userInfo: {
+      display: "flex",
+      alignItems: "center",
+      gap: "1rem",
+      color: "#ffffff",
+    },
+    userAvatar: {
+      width: "40px",
+      height: "40px",
+      backgroundColor: "rgba(255, 255, 255, 0.2)",
+      borderRadius: "50%",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "8px",
+    },
+    roleIcon: {
+      width: "24px",
+      height: "24px",
+      objectFit: "contain",
+    },
+    userDetails: {
+      display: "flex",
+      flexDirection: "column",
+    },
+    userName: {
+      fontWeight: "600",
+      fontSize: "1rem",
+    },
+    userRole: {
+      fontSize: "0.875rem",
+      opacity: "0.8",
+    },
+    topLinks: {
+      display: "flex",
+      gap: "1.5rem",
+      alignItems: "center",
+    },
+    topLink: {
+      color: "#ffffff",
+      cursor: "pointer",
+      fontWeight: "500",
+      textDecoration: "none",
+      display: "flex",
+      alignItems: "center",
+      gap: "0.5rem",
+      padding: "0.5rem",
+      borderRadius: "6px",
+      backgroundColor: "transparent",
+      border: "none",
+    },
+    topLinkIcon: {
+      width: "18px",
+      height: "18px",
+      objectFit: "contain",
+    },
+    timeDisplay: {
+      color: "rgba(255, 255, 255, 0.8)",
+      fontSize: "0.875rem",
+    },
+    content: {
+      width: "100%",
+      maxWidth: "1200px",
+      backgroundColor: "#ffffff",
+      borderRadius: "16px",
+      boxShadow:
+        "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+      padding: "2.5rem",
+      margin: "0 auto",
+      boxSizing: "border-box",
+    },
+    header: {
+      textAlign: "center",
+      marginBottom: "2rem",
+    },
+    title: {
+      fontSize: "2.5rem",
+      fontWeight: "700",
+      color: "#0021A5",
+      marginBottom: "1rem",
+      lineHeight: "1.2",
+    },
+    roleInfoGrid: {
+      display: "flex",
+      justifyContent: "center",
+      gap: "1.5rem",
+      marginBottom: "1.5rem",
+      flexWrap: "wrap",
+    },
+    infoCard: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      padding: "1rem 1.5rem",
+      backgroundColor: "#f8fafc",
+      borderRadius: "12px",
+      border: "1px solid #e2e8f0",
+      minWidth: "120px",
+    },
+    infoCardSpecial: {
+      backgroundColor: "#f0f9ff",
+      border: "1px solid #0ea5e9",
+    },
+    infoLabel: {
+      fontSize: "0.875rem",
+      color: "#64748b",
+      fontWeight: "500",
+      marginBottom: "0.25rem",
+    },
+    infoValue: {
+      fontSize: "1.1rem",
+      color: "#1e293b",
+      fontWeight: "700",
+    },
+    infoValueSpecial: {
+      color: "#0ea5e9",
+    },
+    divider: {
+      height: "1px",
+      width: "100%",
+      backgroundColor: "#e2e8f0",
+      marginTop: "1.5rem",
+      marginBottom: "2rem",
+    },
+    featureGrid: {
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+      gap: "1.5rem",
+      marginTop: "2rem",
+    },
+    featureCard: {
+      backgroundColor: "#fefcfb",
+      padding: "2rem",
+      borderRadius: "16px",
+      border: "1px solid #e2e8f0",
+      boxShadow: "0 4px 6px rgba(0,0,0,0.05)",
+      transition: "all 0.3s ease",
+      cursor: "pointer",
+      position: "relative",
+      overflow: "hidden",
+    },
+    featureCardHover: {
+      transform: "translateY(-8px)",
+      boxShadow: "0 20px 25px rgba(0,0,0,0.15)",
+    },
+    featureHeader: {
+      display: "flex",
+      alignItems: "center",
+      gap: "1rem",
+      marginBottom: "1rem",
+    },
+    featureIconContainer: {
+      padding: "0.75rem",
+      borderRadius: "12px",
+      backgroundColor: "#f8fafc",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    featureIcon: {
+      width: "40px",
+      height: "40px",
+      objectFit: "contain",
+    },
+    featureTextContainer: {
+      flex: "1",
+    },
+    featureTitle: {
+      fontSize: "1.4rem",
+      fontWeight: "600",
+      color: "#1e293b",
+      marginBottom: "0.25rem",
+    },
+    featureStats: {
+      fontSize: "0.875rem",
+      fontWeight: "600",
+      marginBottom: "0.5rem",
+    },
+    featureDescription: {
+      fontSize: "1rem",
+      color: "#475569",
+      lineHeight: "1.6",
+    },
+    footer: {
+      textAlign: "center",
+      marginTop: "3rem",
+      paddingTop: "2rem",
+      borderTop: "1px solid #e2e8f0",
+      fontSize: "0.95rem",
+      color: "#475569",
+    },
+    modal: {
+      position: "fixed",
+      top: "0",
+      left: "0",
+      right: "0",
+      bottom: "0",
+      backgroundColor: "rgba(0, 0, 0, 0.5)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      zIndex: "1000",
+    },
+    modalContent: {
+      backgroundColor: "#ffffff",
+      padding: "2rem",
+      borderRadius: "16px",
+      maxWidth: "500px",
+      width: "90%",
+      maxHeight: "80vh",
+      overflowY: "auto",
+    },
+    modalHeader: {
+      fontSize: "1.5rem",
+      fontWeight: "700",
+      marginBottom: "1rem",
+      color: "#1e293b",
+    },
+    formGroup: {
+      marginBottom: "1rem",
+    },
+    label: {
+      display: "block",
+      fontSize: "0.875rem",
+      fontWeight: "500",
+      color: "#374151",
+      marginBottom: "0.5rem",
+    },
+    select: {
+      width: "100%",
+      padding: "0.75rem",
+      border: "1px solid #d1d5db",
+      borderRadius: "8px",
+      fontSize: "1rem",
+    },
+    checkbox: {
+      display: "flex",
+      alignItems: "center",
+      gap: "0.5rem",
+    },
+    buttonGroup: {
+      display: "flex",
+      gap: "1rem",
+      marginTop: "1.5rem",
+    },
+    button: {
+      flex: "1",
+      padding: "0.75rem 1.5rem",
+      borderRadius: "8px",
+      fontSize: "1rem",
+      fontWeight: "500",
+      cursor: "pointer",
+      transition: "all 0.2s ease",
+      border: "none",
+    },
+    buttonPrimary: {
+      backgroundColor: "#0021A5",
+      color: "#ffffff",
+    },
+    buttonSecondary: {
+      backgroundColor: "#f3f4f6",
+      color: "#374151",
+    },
+  };
 
-      if (response.message === "User and profile created successfully.") {
-      // Optional: Show success message for a second
-        setShowSuccess(true);
-        setTimeout(() => {
-        navigate("/login");
-        }, 1500); //
-      }
+  // ============= RENDER LOGIC =============
+  const capitalizedRole = role
+    ? role.charAt(0).toUpperCase() + role.slice(1)
+    : "User";
+  const currentFeatures = roleFeatures[role] || [];
 
-      // Optionally redirect or show confirmation
-    } catch (error) {
-      console.error("Error:", error);
-      alert("Submission failed! Check console for error."); // UI fallback
+  // Get role icon
+  const getRoleIcon = (role) => {
+    switch (role) {
+      case "student":
+        return studentRoleIcon;
+      case "counselor":
+        return counselorRoleIcon;
+      case "admin":
+        return adminRoleIcon;
+      default:
+        return studentRoleIcon;
     }
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        minHeight: "100vh",
-        width: "100vw",
-        background: "linear-gradient(to right, #FF6A00, #0021A5)",
-        padding: "2rem",
-        boxSizing: "border-box",
-      }}
-    >
-      <div
-        style={{
-          width: "100%",
-          maxWidth: "800px",
-          padding: "2rem",
-          backgroundColor: "lightgray",
-          borderRadius: "10px",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-          boxSizing: "border-box",
-        }}
-      >
-        <img
-          src={ufLogo}
-          alt="UF Logo"
-          style={{
-            width: "80px",
-            display: "block",
-            margin: "0 auto 1rem auto",
-          }}
-        />
-        <h2
-          style={{
-            textAlign: "center",
-            color: "#0021A5",
-            marginBottom: "0.5rem",
-          }}
-        >
-          UF-SWSC Registration
-        </h2>
-        <p
-          style={{
-            textAlign: "center",
-            marginBottom: "2rem",
-            color: "#666",
-          }}
-        >
-          Create your account
-        </p>
+    <div style={styles.container}>
+      {/* UPDATED: Top Navigation Bar - Removed role switching, kept logout and settings */}
+      <div style={styles.topBar}>
+        <div style={styles.userInfo}>
+          <div style={styles.userAvatar}>
+            <img
+              src={getRoleIcon(role)}
+              alt={`${role} icon`}
+              style={styles.roleIcon}
+            />
+          </div>
+          <div style={styles.userDetails}>
+            <div style={styles.userName}>{fullName}</div>
+            <div style={styles.userRole}>{capitalizedRole}</div>
+          </div>
+        </div>
 
-        {/* ✅ Success Message */}
-        {showSuccess && (
-            <div style={{
-                backgroundColor: "#d4edda",
-                padding: "1rem",
-                margin: "0 auto 2rem auto",   // This gives top/bottom space + horizontal centering
+        <div style={styles.topLinks}>
+          <button style={styles.topLink} onClick={handleLogout}>
+            Logout
+          </button>
+        </div>
+      </div>
 
-                borderRadius: "5px",
-                color: "#155724"
-             }}>
-          ✅ Account created successfully! Redirecting to login...
+      {/* Main Content */}
+      <div style={styles.content}>
+        {/* Header Section - Updated to use real user data */}
+        <header style={styles.header}>
+          <h1 style={styles.title}>Welcome, {fullName}!</h1>
+
+          {/* UPDATED: User info cards using real data */}
+          <div style={styles.roleInfoGrid}>
+            <div style={styles.infoCard}>
+              <span style={styles.infoLabel}>Role</span>
+              <span style={styles.infoValue}>{capitalizedRole}</span>
             </div>
-        )}
+            <div style={styles.infoCard}>
+              <span style={styles.infoLabel}>College</span>
+              <span style={styles.infoValue}>{college}</span>
+            </div>
 
-
-        {/* ✅ Main Form */}
-        <form onSubmit={handleSubmit}>
-          <input
-            name="firstName"
-            value={formData.firstName}
-            onChange={handleChange}
-            placeholder="First Name"
-            style={inputStyle}
-          />
-          <input
-            name="lastName"
-            value={formData.lastName}
-            onChange={handleChange}
-            placeholder="Last Name"
-            style={inputStyle}
-          />
-          <input
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="Email Address"
-            style={inputStyle}
-          />
-          <input
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-            placeholder="Phone Number (Optional)"
-            style={inputStyle}
-          />
-          <input
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            placeholder="Username"
-            style={inputStyle}
-          />
-
-          <select
-            name="role"
-            value={formData.role}
-            onChange={handleChange}
-            style={inputStyle}
-          >
-            <option value="">Select Role</option>
-            <option value="student">Student</option>
-            <option value="counselor">Counselor</option>
-
-          </select>
-
-
-          <select value={formData.college} onChange={handleCollegeChange} style={inputStyle}>
-            <option value="">Select College</option>
-            {Object.keys(collegeDepartmentData).map((college) => (
-              <option key={college} value={college}>
-                {college}
-              </option>
-            ))}
-          </select>
-
-          {formData.role === "student" && (
-            <select
-            name="department"
-            value={formData.department}
-            onChange={handleChange}
-            style={inputStyle}
-            >
-            <option value="">Select Department</option>
-            {departments.map((dept) => (
-            <option key={dept} value={dept}>
-                {dept}
-            </option>
-            ))}
-            </select>
-          )}
-
-
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            placeholder="Password"
-            style={inputStyle}
-          />
-          <input
-            type="password"
-            name="confirmPassword"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            placeholder="Confirm Password"
-            style={inputStyle}
-          />
-
-          <div style={{ display: "flex", alignItems: "center", marginBottom: "1rem" }}>
-            <input type="checkbox" id="tos" required />
-            <label htmlFor="tos" style={{ marginLeft: "0.5rem", color: "#666" }}>
-              I agree to the <Link to="#">Terms of Service</Link> and{" "}
-              <Link to="#">Privacy Policy</Link>
-            </label>
+            {/* Conditionally show role-specific information */}
+            {major && (
+              <div style={styles.infoCard}>
+                <span style={styles.infoLabel}>Major</span>
+                <span style={styles.infoValue}>{major}</span>
+              </div>
+            )}
+            {department && (
+              <div style={styles.infoCard}>
+                <span style={styles.infoLabel}>Department</span>
+                <span style={styles.infoValue}>{department}</span>
+              </div>
+            )}
+            {gpa && (
+              <div style={{ ...styles.infoCard, ...styles.infoCardSpecial }}>
+                <span style={styles.infoLabel}>GPA</span>
+                <span
+                  style={{ ...styles.infoValue, ...styles.infoValueSpecial }}
+                >
+                  {gpa}
+                </span>
+              </div>
+            )}
+            {assignedStudents && (
+              <div style={{ ...styles.infoCard, ...styles.infoCardSpecial }}>
+                <span style={styles.infoLabel}>Assigned Students</span>
+                <span
+                  style={{ ...styles.infoValue, ...styles.infoValueSpecial }}
+                >
+                  {assignedStudents}
+                </span>
+              </div>
+            )}
+            {totalUsers && (
+              <div style={{ ...styles.infoCard, ...styles.infoCardSpecial }}>
+                <span style={styles.infoLabel}>Total Users</span>
+                <span
+                  style={{ ...styles.infoValue, ...styles.infoValueSpecial }}
+                >
+                  {totalUsers}
+                </span>
+              </div>
+            )}
+            {studentId && (
+              <div style={styles.infoCard}>
+                <span style={styles.infoLabel}>Student ID</span>
+                <span style={styles.infoValue}>{studentId}</span>
+              </div>
+            )}
+            {employeeId && (
+              <div style={styles.infoCard}>
+                <span style={styles.infoLabel}>Employee ID</span>
+                <span style={styles.infoValue}>{employeeId}</span>
+              </div>
+            )}
           </div>
 
-          <button
-            type="submit"
-            style={{
-              width: "100%",
-              padding: "1rem",
-              background: "linear-gradient(to right, #36D1DC, #5B86E5)",
-              color: "white",
-              fontSize: "1rem",
-              border: "none",
-              borderRadius: "5px",
-              cursor: "pointer",
-              transition: "background-color 0.3s ease",
-            }}
-            onMouseOver={(e) => (e.target.style.backgroundColor = "#001a85")}
-            onMouseOut={(e) => (e.target.style.backgroundColor = "#0021A5")}
-          >
-            Create Account
-          </button>
-        </form>
+          <div style={styles.divider}></div>
+        </header>
 
-        <p
-          style={{
-            textAlign: "center",
-            marginTop: "1rem",
-            color: "#666",
-          }}
-        >
-          Already have an account? <Link to="/login">Sign in here</Link>
-        </p>
+        {/* UPDATED: Features Grid - Now without icons */}
+        <div style={styles.featureGrid}>
+          {currentFeatures.map((feature, index) => (
+            <div
+              key={index}
+              style={styles.featureCard}
+              onClick={() => handleFeatureClick(feature)}
+              onMouseEnter={(e) => {
+                Object.assign(e.currentTarget.style, styles.featureCardHover);
+                e.currentTarget.style.borderLeftColor = feature.color;
+                e.currentTarget.style.borderLeftWidth = "4px";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 4px 6px rgba(0,0,0,0.05)";
+                e.currentTarget.style.borderLeftColor = "#e2e8f0";
+                e.currentTarget.style.borderLeftWidth = "1px";
+              }}
+            >
+              <div style={styles.featureTextContainer}>
+                <h3 style={styles.featureTitle}>{feature.title}</h3>
+                {feature.stats && (
+                  <div style={{ ...styles.featureStats, color: feature.color }}>
+                    {feature.stats}
+                  </div>
+                )}
+              </div>
+              <p style={styles.featureDescription}>{feature.description}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Footer */}
+        <footer style={styles.footer}>
+          <p>
+            Developed by Group 3 | University of Florida Intro to Software
+            Engineering Project
+          </p>
+          <p style={{ marginTop: "0.5rem", fontSize: "0.875rem" }}>
+            Currently viewing: {capitalizedRole} Dashboard (
+            {currentFeatures.length} features available)
+          </p>
+        </footer>
       </div>
+
+      {/* REMOVED: Settings Modal - no longer needed */}
     </div>
   );
 }
