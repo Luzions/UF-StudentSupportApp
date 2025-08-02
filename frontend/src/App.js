@@ -6,6 +6,9 @@ import RegisterPage from "./pages/RegisterPage";
 import AlertsResources from "./pages/AlertsResources";
 import Dashboard from "./pages/Dashboard";
 import GpaTracker from './pages/GpaTracker';
+import UserPage from './pages/UserPage'; // adjust path if needed
+
+
 
 
 function App() {
@@ -20,6 +23,7 @@ function App() {
         <Route path="/student-dashboard" element={<Dashboard />} />
         <Route path="/admin-dashboard" element={<Dashboard />} />  // Will need to update to counselor
         <Route path="/gpa-tracker" element={<GpaTracker />} />
+        <Route path="/user-profiles" element={<UserPage />} />
       </Routes>
     </Router>
   );
