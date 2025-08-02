@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import logoImg from "../assets/logo-Image.jpg";
 import { Link } from "react-router-dom";
@@ -25,6 +26,17 @@ const handleSubmit = async (e) => {
 
     alert(response.message || "Login successful");
 
+    // ⬇️ WHOAMI CHECK — add this right after alert
+    try {
+      const whoamiRes = await axios.get("http://localhost:8000/users/whoami/", {
+        withCredentials: true,
+      });
+      console.log("Whoami successful. User:", whoamiRes.data);
+    } catch (whoamiErr) {
+      console.error("Whoami failed:", whoamiErr.response?.status, whoamiErr.response?.data);
+    }
+
+    // Navigation logic
     if (response.role === "admin" || response.role === "counselor") {
       navigate("/admin-dashboard");
     } else {
@@ -34,6 +46,8 @@ const handleSubmit = async (e) => {
     alert(err?.response?.data?.error || "Login failed");
   }
 };
+
+
 
   const styles = {
     container: {

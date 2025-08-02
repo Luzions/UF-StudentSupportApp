@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 print("Django loaded settings from announcements.main.settings")
 
 from pathlib import Path
-from urllib.request import localhost
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -143,6 +143,41 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Allow React to make API requests to Django during development
+# settings.py
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend'
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
+LOGIN_URL = None
+
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
 ]
+
+# CSRF Config
+CSRF_COOKIE_HTTPONLY = False  # Good for exposing token to JS if needed
+CSRF_COOKIE_SAMESITE = 'Lax'  # 'Lax' is a good default for CSRF protection
+
+CSRF_COOKIE_SECURE = False  # Set to True if using HTTPS
+
+# Session Config
+#SESSION_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SECURE = False  # Same as above — only True in HTTPS
+
+# Trusted Origins for CSRF validation (Django 4.0+)
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000"
+]
+
+# Django REST Framework settings for API authentication
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ],
+}
+

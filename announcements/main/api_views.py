@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from announcements.main.models import UserProfile  # import model correctly
 import json
+import random
 
 @csrf_exempt
 def register_user(request):
@@ -28,6 +29,7 @@ def register_user(request):
         if User.objects.filter(username=username).exists():
             return JsonResponse({'error': 'Username already exists'}, status=400)
 
+        gpa = round(random.uniform(2.0, 4.0), 2) if role == 'student' else None
         # Create basic User account
         user = User.objects.create_user(
             username=username,
@@ -45,7 +47,8 @@ def register_user(request):
             phone=phone,
             role=role,
             college=college,
-            department=department
+            department=department,
+            cumulative_gpa=gpa
         )
 
         return JsonResponse({'message': 'User and profile created successfully.'})

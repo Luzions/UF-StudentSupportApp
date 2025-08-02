@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <h2>📘 Counselor GPA Dashboard</h2>
+
+  <form method="get">
+    <label for="student_id">Select a student:</label>
+    <select name="student_id" id="student_id" onchange="this.form.submit()">
+      <option value="">-- Choose --</option>
+      {% for student in students %}
+        <option value="{{ student.id }}" {% if student.id == selected_student_id %}selected{% endif %}>
+          {{ student.first_name }} {{ student.last_name }}
+        </option>
+      {% endfor %}
+    </select>
+  </form>
+
+  {% if selected_gpa %}
+    <p>Current GPA for selected student: <strong>{{ selected_gpa }}</strong></p>
+  {% endif %}
+{% endblock %}
