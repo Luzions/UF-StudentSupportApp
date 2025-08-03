@@ -54,7 +54,7 @@ export function getFeaturesByRole(user) {
           "View important dates, deadlines, and schedule appointments with advisors.",
         color: "#EF4444",
         stats: "3 upcoming deadlines",
-        route: "/calendar",
+        route: "/calendarPage",
       },
     ],
 
