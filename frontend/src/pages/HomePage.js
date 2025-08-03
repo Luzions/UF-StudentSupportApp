@@ -104,6 +104,9 @@ export default function HomePage() {
           <Link to="/gpa" style={styles.navLink}>
             GPA Tracking
           </Link>
+          <Link to="/calendarPage" style={styles.navLink}>
+            Calendar
+          </Link>
           <Link to="/wellness" style={styles.navLink}>
             Mental Wellness
           </Link>
@@ -113,6 +116,7 @@ export default function HomePage() {
           <Link to="/about" style={styles.navLink}>
             About
           </Link>
+
         </nav>
       </header>
 
