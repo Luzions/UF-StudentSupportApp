@@ -2,6 +2,11 @@ import axios from 'axios';
 
 const BASE_URL = 'http://localhost:8000/api';
 
+axios.defaults.withCredentials = true;
+axios.defaults.xsrfCookieName = 'csrftoken';
+axios.defaults.xsrfHeaderName = 'X-CSRFToken';
+
+
 export const registerUser = async (formData) => {
   try {
     const response = await axios.post(`${BASE_URL}/register/`, formData, {

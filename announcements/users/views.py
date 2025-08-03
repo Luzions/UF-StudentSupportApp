@@ -3,45 +3,86 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from rest_framework import viewsets, permissions
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+
 from rest_framework.response import Response
+
 from announcements.main.models import UserProfile
 from .forms import CustomUserCreationForm
 from .serializers import UserProfileSerializer
-from django.db.models import Q
-
-
-
+from rest_framework.permissions import IsAuthenticated
 import random
 import json
+from django.http import JsonResponse
 
-# 🔹 DRF ViewSet
-class UserProfileViewSet(viewsets.ReadOnlyModelViewSet):
+def user_profiles(request):
+    return JsonResponse({'status': 'ok', 'message': 'User profiles route active.'})
+
+
+@csrf_exempt
+def update_user_profile(request, user_id):
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid request method"}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        profile = UserProfile.objects.get(user__id=user_id)
+
+        # Example updates (customize to match your fields)
+        profile.role = data.get("role", profile.role)
+        profile.college = data.get("college", profile.college)
+        profile.save()
+
+        return JsonResponse({"status": "Profile updated successfully"})
+    except UserProfile.DoesNotExist:
+        return JsonResponse({"error": "UserProfile not found"}, status=404)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+
+# 🔹 CSRF Endpoint
+@csrf_protect
+def csrf_check_view(request):
+    return JsonResponse({"detail": "CSRF check passed"})
+
+# 🔹 DRF ViewSet – NOW WRITABLE!
+class UserProfileViewSet(viewsets.ModelViewSet):
     serializer_class = UserProfileSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
-    from django.db.models import Q
+    def partial_update(self, request, *args, **kwargs):
+        print("PATCH received")
+        print("Payload:", request.data)
+        try:
+            obj = self.get_object()
+            serializer = self.get_serializer(obj, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                print("✅ Save successful")
+                return Response(serializer.data)
+            else:
+                print("❌ Serializer errors:", serializer.errors)
+                return Response(serializer.errors, status=400)
+        except Exception as e:
+            print("Exception during PATCH:", str(e))
+            import traceback
+            traceback.print_exc()
+            return Response({'error': str(e)}, status=500)
 
     def get_queryset(self):
         user = self.request.user
-
         try:
             profile = UserProfile.objects.get(user=user)
         except UserProfile.DoesNotExist:
             return UserProfile.objects.none()
 
         if profile.role == "counselor":
-            return UserProfile.objects.filter(
-                Q(role="student") | Q(user=user)
-            ).order_by("last_name")
-        else:
-            return UserProfile.objects.filter(user=user)
+            return UserProfile.objects.all()
+        return UserProfile.objects.filter(user=user)
 
 # 🔹 Auth: Registration
-@csrf_exempt  # Optional: consider removing if CSRF token is handled by frontend
+@csrf_exempt
 def register_view(request):
     if request.user.is_authenticated:
         logout(request)
@@ -114,23 +155,6 @@ def logout_view(request):
         logout(request)
         return redirect('posts:list')
 
-# 🔹 User Profile editing for authenticated users
-@api_view(['PUT'])
-@permission_classes([IsAuthenticated])
-def update_user_profile(request, user_id):
-    try:
-        profile = UserProfile.objects.get(user__id=user_id)
-
-        serializer = UserProfileSerializer(profile, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=400)
-
-    except UserProfile.DoesNotExist:
-        return Response({'error': 'Profile not found'}, status=404)
-
-
 # 🔹 GPA Tracker
 def gpa_tracker_view(request):
     if not request.user.is_authenticated:
@@ -153,10 +177,13 @@ def gpa_tracker_view(request):
             "selected_gpa": selected_gpa
         })
 
-
+# 🔹 Debug Endpoint: Who am I?
 def whoami_view(request):
     user = request.user
-    profile = getattr(user, "profile", None)
+    try:
+        profile = UserProfile.objects.get(user=user)
+    except UserProfile.DoesNotExist:
+        profile = None
 
     response_data = {
         "username": user.username if user.is_authenticated else "unknown",
@@ -169,3 +196,28 @@ def whoami_view(request):
     response["Access-Control-Allow-Origin"] = "http://localhost:3000"
     response["Access-Control-Allow-Credentials"] = "true"
     return response
+
+# 🔹 API: Delete User Profile
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
+
+def delete_user(request, username):
+    user_to_delete = get_object_or_404(User, username=username)
+
+    # Permission logic: allow self-deletion or counselor-level deletion
+    if request.user.username != username and request.user.profile.role != 'counselor':
+        messages.error(request, "Unauthorized: You can only delete your own account.")
+        return redirect('user_dashboard')  # Update this to your actual fallback view name
+
+    # Delete the user
+    user_to_delete.delete()
+    print(f"{request.user.username} deleted {username}") # Logs who deleted whom if using manage.py runserver
+    messages.success(request, f"User '{username}' deleted successfully.")
+
+    # Redirect logic
+    if request.user.username == username:
+        # Student deleted their own account — send to login
+        return redirect('login')
+    else:
+        # Counselor deleted someone else — send back to user list
+        return redirect('user-profiles')

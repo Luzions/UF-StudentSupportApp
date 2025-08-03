@@ -2,7 +2,15 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from announcements.main.models import UserProfile  # import model correctly
+from django.views.decorators.http import require_http_methods
+from announcements.main.models import UserProfile
+from django.shortcuts import get_object_or_404
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
+
+
+
 import json
 import random
 
@@ -97,4 +105,51 @@ def login_user(request):
         import traceback
         traceback.print_exc()
         return JsonResponse({'error': f'Login failed: {str(e)}'}, status=500)
+
+
+@api_view(['DELETE'])
+def delete_user_profile(request, username):
+    if not request.user.is_authenticated:
+        return Response({'error': 'Unauthorized'}, status=403)
+
+    try:
+        profile = UserProfile.objects.get(user=request.user)
+    except UserProfile.DoesNotExist:
+        return Response({'error': 'Authenticated user has no profile'}, status=404)
+
+    if profile.role != 'counselor':
+        return Response({'error': 'Insufficient privileges'}, status=403)
+
+    try:
+        target_user = get_object_or_404(User, username=username)
+        target_user.delete()
+        return Response({'message': f'User {username} deleted successfully'}, status=200)
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return Response({'error': str(e)}, status=500)
+
+
+@csrf_exempt
+@api_view(['DELETE'])
+def delete_own_profile(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Unauthorized'}, status=403)
+
+    try:
+        profile = UserProfile.objects.get(user=request.user)
+    except UserProfile.DoesNotExist:
+        return JsonResponse({'error': 'Profile not found'}, status=404)
+
+    if profile.role != 'student':
+        return JsonResponse({'error': 'Only students can delete their own profiles.'}, status=403)
+
+    try:
+        request.user.delete()
+        return JsonResponse({'message': 'Your profile has been successfully deleted.'})
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({'error': f'Deletion failed: {str(e)}'}, status=500)
 

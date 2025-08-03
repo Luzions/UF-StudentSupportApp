@@ -16,12 +16,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include, re_path
-# from . import views -- old to be removed
-from django.conf.urls.static import static
+
 from django.conf import settings
 from django.views.static import serve
-
 from . import api_views
+from announcements.users.views import csrf_check_view
+from django.urls import path
+from .api_views import delete_user_profile, delete_own_profile
+
 
 urlpatterns = [
     re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
@@ -33,6 +35,10 @@ urlpatterns = [
     path('users/', include('announcements.users.urls')),
     path('api/register/', api_views.register_user, name='register'),
     path('api/login/', api_views.login_user, name='login'),
+    path('csrf-check/', csrf_check_view),
+    path('profiles/delete/<username>/', delete_user_profile),
+    path('profiles/self-delete/', delete_own_profile),
+
 
 ]
 

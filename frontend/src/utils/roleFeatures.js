@@ -15,6 +15,14 @@ export function getFeaturesByRole(user) {
   // ============= ROLE-BASED FEATURES  =============
   const roleFeatures = {
     student: [
+       {
+        title: "Account Management",
+        description:
+          "View and manage your general account settings.",
+        color: "#3B82F6",
+        stats: "Current Profile",
+        route: "/user-profiles",
+      },
       {
         title: "GPA Tracking",
         description:

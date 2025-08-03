@@ -72,7 +72,7 @@ export default function Dashboard() {
   }, []);
 
 
-  // ============= GPA HANDLING moved to roleFeatures.js =============
+// ============= GPA HANDLING moved to roleFeatures.js =============
 
 
 // ============= ROLE-BASED FEATURES MOVED TO utils/roleFeatures.js =============

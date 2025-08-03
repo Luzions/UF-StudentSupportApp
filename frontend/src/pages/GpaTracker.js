@@ -3,13 +3,8 @@ import gatorLogo from '../assets/gator-logo.png';
 import ufLogo from '../assets/uf-logo.png';
 import backgroundImage from '../assets/1-everglades-florida.png';
 import axios from 'axios';
+import getCookie from '../utils/getCookie';
 
-function getCookie(name) {
-  const cookieValue = document.cookie
-    .split('; ')
-    .find(row => row.startsWith(name + '='));
-  return cookieValue ? cookieValue.split('=')[1] : null;
-}
 
 const GpaTracker = () => {
   const [cumulativeGpa, setCumulativeGpa] = useState(null);

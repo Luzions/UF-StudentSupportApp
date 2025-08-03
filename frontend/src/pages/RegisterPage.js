@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import ufLogo from "../assets/uf-logo.png";
 import { useNavigate } from "react-router-dom";
 
-const collegeDepartmentData = {
+export const collegeDepartmentData = {
   "College of Agricultural and Life Sciences": [
     "Agricultural and Biological Engineering",
     "Agricultural Education and Communication",
@@ -130,6 +130,8 @@ const collegeDepartmentData = {
   ],
   "College of Veterinary Medicine": ["Veterinary Medical Sciences"],
 };
+
+
 
 // Common input/select styles
 const inputStyle = {
