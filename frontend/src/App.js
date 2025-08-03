@@ -7,7 +7,7 @@ import AlertsResources from "./pages/AlertsResources";
 import Dashboard from "./pages/Dashboard";
 import GpaTracker from './pages/GpaTracker';
 import UserPage from './pages/UserPage';
-import {CalendarPage} from './pages/CalendarPage';
+import CalendarPage from './pages/CalendarPage';
 
 
 
