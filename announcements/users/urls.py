@@ -23,11 +23,14 @@ urlpatterns = [
     path('whoami/', whoami_view, name='whoami'),
 
     # User profile management
-    path('delete/<str:username>/', delete_user_profile),
-    path('delete-user/<str:username>/', delete_user, name='delete_user'),
-    path('delete/<str:username>/', delete_user_profile, name='delete-user'),
-    path('self-delete/',  delete_own_profile, name='self-delete'),
 
+    # Counselor deletes student profiles
+    path('delete/<str:username>/', delete_user_profile, name='delete-user-counselor'),
+    # Admin or system-level deletion
+    path('delete-user/<str:username>/', delete_user, name='delete-user'),
+
+    path('self-delete/',  delete_own_profile, name='self-delete'),
+    path('delete-own-profile/', delete_own_profile, name='delete_own_profile'),
 
     # API routes handled by the router
     path('', include(router.urls)),

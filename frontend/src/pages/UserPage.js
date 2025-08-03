@@ -94,14 +94,28 @@ export default function UserPage() {
   const handleDelete = (username) => {
     if (!window.confirm(`Are you sure you want to delete ${username}?`)) return;
 
-    secureAxios.delete(`users/delete/${username}/`, {
+    const isSelfDelete = username === currentUser?.username;
+    const endpoint = isSelfDelete
+      ? 'users/delete-own-profile/'
+      : `users/delete/${username}/`;
+
+    secureAxios.delete(endpoint, {
       headers: {
         'X-CSRFToken': getCookie('csrftoken'),
       },
-      withCredentials: true
+      withCredentials: true,
     })
-      .then(() => {
+      .then((response) => {
         setProfiles(prev => prev.filter(p => p.username !== username));
+        setSuccessMessage('✅ Profile deleted successfully!');
+
+        if (isSelfDelete && response.data.redirect) {
+          setTimeout(() => {
+            navigate(response.data.redirect);
+          }, 1500);
+        } else {
+          setTimeout(() => setSuccessMessage(''), 3000);
+        }
       })
       .catch(() => {
         setError('Failed to delete profile.');

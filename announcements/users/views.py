@@ -15,6 +15,8 @@ from rest_framework.permissions import IsAuthenticated
 import random
 import json
 from django.http import JsonResponse
+from django.contrib.auth import logout
+
 
 def user_profiles(request):
     return JsonResponse({'status': 'ok', 'message': 'User profiles route active.'})
@@ -207,17 +209,16 @@ def delete_user(request, username):
     # Permission logic: allow self-deletion or counselor-level deletion
     if request.user.username != username and request.user.profile.role != 'counselor':
         messages.error(request, "Unauthorized: You can only delete your own account.")
-        return redirect('user_dashboard')  # Update this to your actual fallback view name
+        return redirect('user_dashboard')  # Update to your actual fallback view name
 
-    # Delete the user
-    user_to_delete.delete()
-    print(f"{request.user.username} deleted {username}") # Logs who deleted whom if using manage.py runserver
-    messages.success(request, f"User '{username}' deleted successfully.")
-
-    # Redirect logic
+    # Redirect logic before deletion
     if request.user.username == username:
-        # Student deleted their own account — send to login
-        return redirect('login')
+        logout(request)  # Ends session before deletion
+        user_to_delete.delete()
+        messages.success(request, "Your account has been successfully deleted.")
+        return redirect('login')  # Make sure 'login' is the correct route name
     else:
-        # Counselor deleted someone else — send back to user list
+        user_to_delete.delete()
+        messages.success(request, f"User '{username}' deleted successfully.")
+        print(f"{request.user.username} deleted {username}")
         return redirect('user-profiles')

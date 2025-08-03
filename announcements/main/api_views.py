@@ -1,12 +1,13 @@
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_http_methods
 from announcements.main.models import UserProfile
 from django.shortcuts import get_object_or_404
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import api_view
+from django.http import JsonResponse
+from django.contrib.auth import logout
+from django.contrib.auth import get_user_model
 
 
 
@@ -131,25 +132,23 @@ def delete_user_profile(request, username):
         return Response({'error': str(e)}, status=500)
 
 
-@csrf_exempt
-@api_view(['DELETE'])
+
 def delete_own_profile(request):
-    if not request.user.is_authenticated:
-        return JsonResponse({'error': 'Unauthorized'}, status=403)
-
+    User = get_user_model()
     try:
-        profile = UserProfile.objects.get(user=request.user)
-    except UserProfile.DoesNotExist:
-        return JsonResponse({'error': 'Profile not found'}, status=404)
+        user_to_delete = User.objects.get(pk=request.user.pk)
 
-    if profile.role != 'student':
-        return JsonResponse({'error': 'Only students can delete their own profiles.'}, status=403)
+        user_to_delete.delete()   #  Commit the deletion first
+        logout(request)           #  THEN kill the session
 
-    try:
-        request.user.delete()
-        return JsonResponse({'message': 'Your profile has been successfully deleted.'})
+        return JsonResponse({
+            'message': 'Your account has been successfully deleted.',
+            'redirect': '/login'
+        }, status=200)
+
+    except User.DoesNotExist:
+        return JsonResponse({ 'error': 'User not found.' }, status=404)
+
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return JsonResponse({'error': f'Deletion failed: {str(e)}'}, status=500)
-
+        print(f"🔥 Deletion error: {e}")
+        return JsonResponse({ 'error': str(e) }, status=500)
