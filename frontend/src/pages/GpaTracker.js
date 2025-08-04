@@ -1,13 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import gatorLogo from '../assets/gator-logo.png';
 import ufLogo from '../assets/uf-logo.png';
 import backgroundImage from '../assets/1-everglades-florida.png';
+import axios from 'axios';
+import getCookie from '../utils/getCookie';
+
 
 const GpaTracker = () => {
-  const savedCumGpa = parseFloat(localStorage.getItem('cumulativeGpa')) || 3.2;
-  const [cumulativeGpa] = useState(savedCumGpa);
+  const [cumulativeGpa, setCumulativeGpa] = useState(null);
   const [grades, setGrades] = useState(Array(6).fill(''));
   const [credits, setCredits] = useState(Array(6).fill(3));
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const storedUsername = localStorage.getItem('username');
+    if (!storedUsername) {
+      console.warn('Username missing from localStorage. Make sure user is logged in.');
+      return;
+    }
+
+    axios.get('http://localhost:8000/users/user-profiles/', {
+      withCredentials: true,
+      headers: { 'Content-Type': 'application/json' }
+    })
+    .then(res => {
+      const data = res.data;
+
+      const profile = Array.isArray(data)
+        ? data.find(p => p.username === storedUsername)
+        : null;
+
+      if (profile && profile.cumulative_gpa !== null) {
+        setCumulativeGpa(parseFloat(profile.cumulative_gpa));
+      } else {
+        setError('GPA not found or profile incomplete.');
+      }
+    })
+    .catch(err => {
+      console.error('Error fetching profile:', err);
+      setError('Failed to load GPA data.');
+    });
+  }, []);
 
   const handleGradeChange = (idx, value) => {
     const newGrades = [...grades];
@@ -28,14 +61,21 @@ const GpaTracker = () => {
   const totalCredits = validInputs.reduce((sum, item) => sum + item.credit, 0);
   const totalPoints = validInputs.reduce((sum, item) => sum + item.grade * item.credit, 0);
   const semesterGpa = totalCredits > 0 ? totalPoints / totalCredits : null;
-  const combinedGpa = semesterGpa !== null ? (cumulativeGpa + semesterGpa) / 2 : null;
+  const combinedGpa = semesterGpa !== null && cumulativeGpa !== null
+    ? (cumulativeGpa + semesterGpa) / 2
+    : null;
 
   return (
     <div style={styles.pageBackground}>
       <div style={styles.container}>
         <h2 style={styles.title}>📘 GPA Tracker</h2>
         <p style={styles.subtext}>
-          Your current cumulative GPA: <strong>{cumulativeGpa.toFixed(2)}</strong>
+          Your current cumulative GPA:{' '}
+          <strong>
+            {cumulativeGpa !== null
+              ? cumulativeGpa.toFixed(2)
+              : error || 'Loading...'}
+          </strong>
         </p>
 
         {grades.map((grade, i) => (
@@ -66,7 +106,9 @@ const GpaTracker = () => {
         {semesterGpa !== null && (
           <div style={styles.resultBox}>
             <p><strong>Semester GPA:</strong> {semesterGpa.toFixed(2)}</p>
-            <p><strong>Projected Cumulative GPA:</strong> {combinedGpa.toFixed(2)}</p>
+            {combinedGpa !== null && (
+              <p><strong>Projected Cumulative GPA:</strong> {combinedGpa.toFixed(2)}</p>
+            )}
           </div>
         )}
 

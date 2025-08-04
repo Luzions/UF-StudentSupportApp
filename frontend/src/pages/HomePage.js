@@ -101,10 +101,11 @@ export default function HomePage() {
           <img src={ufLogo} alt="UF Logo" style={styles.logo} />
         </div>
         <nav style={styles.navLinks}>
-          <Link to="/gpa" style={styles.navLink}>
+          <Link to="/gpainfo" style={styles.navLink}>
             GPA Tracking
           </Link>
-          <Link to="/wellness" style={styles.navLink}>
+
+          <Link to="/mental-wellness" style={styles.navLink}>
             Mental Wellness
           </Link>
           <Link to="/alertsResources" style={styles.navLink}>
@@ -113,6 +114,7 @@ export default function HomePage() {
           <Link to="/about" style={styles.navLink}>
             About
           </Link>
+
         </nav>
       </header>
 

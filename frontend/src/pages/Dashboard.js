@@ -1,30 +1,30 @@
 // src/pages/Dashboard.js
-import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import React, { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from 'axios';
 
 // ============= ICON =============
 import studentRoleIcon from "../assets/student-role-icon.png";
 import counselorRoleIcon from "../assets/counselor-role-icon.png";
 import adminRoleIcon from "../assets/admin-role-icon.png";
+import { getFeaturesByRole } from '../utils/roleFeatures';
 
 export default function Dashboard() {
-  // ============= GET REAL USER DATA FROM LOCALSTORAGE =============
+  const navigate = useNavigate();
+
+  // ============= GET LOCAL STORAGE USER DATA =============
   const fullName = localStorage.getItem("full_name");
   const role = localStorage.getItem("role");
   const college = localStorage.getItem("college");
-
-  // Additional user data
   const studentId = localStorage.getItem("student_id");
   const employeeId = localStorage.getItem("employee_id");
   const major = localStorage.getItem("major");
-  const year = localStorage.getItem("year");
   const department = localStorage.getItem("department");
-  const specialization = localStorage.getItem("specialization");
-  const accessLevel = localStorage.getItem("access_level");
-  const gpa = localStorage.getItem("gpa");
+  const storedGpa = localStorage.getItem("gpa");
   const credits = localStorage.getItem("credits");
   const assignedStudents = localStorage.getItem("assigned_students");
   const totalUsers = localStorage.getItem("total_users");
+
 
   const navigate = useNavigate();
 
@@ -43,141 +43,59 @@ export default function Dashboard() {
 
   // UI State
   const [currentTab, setCurrentTab] = useState("dashboard");
-  const [selectedFeature, setSelectedFeature] = useState(null);
 
-  // ============= ROLE-BASED FEATURES  =============
-  const roleFeatures = {
-    student: [
-      {
-        title: "GPA Tracking",
-        description:
-          "Track your GPA and monitor course progress throughout your academic journey.",
-        color: "#10B981",
-        stats: gpa ? `Current GPA: ${gpa}` : "GPA not available",
-        route: "/gpa-tracker",
-      },
-      {
-        title: "Wellness Support",
-        description:
-          "Access mental health resources, mood tracking, and wellness check-ins.",
-        color: "#8B5CF6",
-        stats: "Last check-in: 2 days ago",
-        route: "/alertsResources",
-      },
-      {
-        title: "Course Mapping",
-        description:
-          "Plan your degree path with intelligent course recommendations and prerequisites.",
-        color: "#F59E0B",
-        stats: credits ? `${credits} credits` : "Credits not available",
-        route: "/course-mapping",
-      },
-      {
-        title: "Academic Calendar",
-        description:
-          "View important dates, deadlines, and schedule appointments with advisors.",
-        color: "#EF4444",
-        stats: "3 upcoming deadlines",
-        route: "/calendar",
-      },
-    ],
-    counselor: [
-      {
-        title: "Student Management",
-        description:
-          "View and manage your assigned students' academic progress and wellness.",
-        color: "#3B82F6",
-        stats: assignedStudents
-          ? `${assignedStudents} assigned students`
-          : "No students assigned",
-        route: "/student-management",
-      },
-      {
-        title: "Wellness Dashboard",
-        description:
-          "Monitor student wellness metrics and intervention recommendations.",
-        color: "#10B981",
-        stats: "12 students need attention",
-        route: "/alertsResources",
-      },
-      {
-        title: "Appointment Scheduling",
-        description:
-          "Manage your calendar and schedule meetings with students.",
-        color: "#F59E0B",
-        stats: "8 appointments this week",
-        route: "/appointments",
-      },
-      {
-        title: "Resource Library",
-        description:
-          "Access counseling resources, guides, and intervention strategies.",
-        color: "#8B5CF6",
-        stats: "127 resources available",
-        route: "/resources",
-      },
-      {
-        title: "Reports & Analytics",
-        description:
-          "Generate reports on student progress and wellness trends.",
-        color: "#EF4444",
-        stats: "5 reports pending",
-        route: "/reports",
-      },
-    ],
-    admin: [
-      {
-        title: "User Management",
-        description:
-          "Manage student, counselor, and admin accounts across the system.",
-        color: "#6B7280",
-        stats: totalUsers
-          ? `${totalUsers} total users`
-          : "User count not available",
-        route: "/user-management",
-      },
-      {
-        title: "System Analytics",
-        description:
-          "View comprehensive analytics across all users and departments.",
-        color: "#3B82F6",
-        stats: "98.7% system uptime",
-        route: "/analytics",
-      },
-      {
-        title: "College Management",
-        description:
-          "Manage college information, departments, and organizational structure.",
-        color: "#10B981",
-        stats: "16 colleges active",
-        route: "/college-management",
-      },
-      {
-        title: "Course Catalog",
-        description:
-          "Manage course offerings, prerequisites, and academic requirements.",
-        color: "#F59E0B",
-        stats: "2,347 courses listed",
-        route: "/course-catalog",
-      },
-      {
-        title: "System Settings",
-        description:
-          "Configure system-wide settings, permissions, and security.",
-        color: "#8B5CF6",
-        stats: "All systems operational",
-        route: "/system-settings",
-      },
-      {
-        title: "Backup & Security",
-        description:
-          "Manage data backups, security protocols, and system maintenance.",
-        color: "#EF4444",
-        stats: "Daily backup: Complete",
-        route: "/security",
-      },
-    ],
-  };
+  // ============= USER PROFILE FETCHING =============
+  const [userProfile, setUserProfile] = useState(null);
+
+  const [selectedFeature, setSelectedFeature] = useState(null);
+  const gpa = userProfile?.cumulative_gpa ?? storedGpa;
+
+
+  // ============= MEMOIZED FEATURES BASED ON USER ROLE/DATA =============
+  const features = useMemo(() => {
+    const currentUser = {
+      role,
+      gpa: userProfile?.cumulative_gpa ?? storedGpa,
+      credits,
+      assignedStudents,
+      totalUsers
+    };
+    return getFeaturesByRole(currentUser);
+  }, [role, userProfile, storedGpa, credits, assignedStudents, totalUsers]);
+
+  useEffect(() => {
+    const storedUsername = localStorage.getItem('username');
+    if (!storedUsername) {
+      console.warn('Username missing from localStorage.');
+      return;
+    }
+
+    axios.get('http://localhost:8000/users/user-profiles/', {
+      withCredentials: true,
+      headers: { 'Content-Type': 'application/json' }
+    })
+    .then(res => {
+      const data = res.data;
+      const profile = Array.isArray(data)
+        ? data.find(p => p.username === storedUsername)
+        : null;
+
+      if (profile) {
+        setUserProfile(profile);
+      } else {
+        console.warn('Profile not found for user:', storedUsername);
+      }
+    })
+    .catch(err => {
+      console.error('Error fetching profile:', err.response?.status, err.response?.data || err.message);
+    });
+  }, []);
+
+
+// ============= GPA HANDLING moved to roleFeatures.js =============
+
+
+// ============= ROLE-BASED FEATURES MOVED TO utils/roleFeatures.js =============
 
   // ============= HANDLERS =============
   const handleFeatureClick = (feature) => {
@@ -481,7 +399,7 @@ export default function Dashboard() {
   const capitalizedRole = role
     ? role.charAt(0).toUpperCase() + role.slice(1)
     : "User";
-  const currentFeatures = roleFeatures[role] || [];
+  //const currentFeatures = roleFeatures[role] || []; // not needed while using useMemo
 
   // Get role icon
   const getRoleIcon = (role) => {
@@ -609,7 +527,7 @@ export default function Dashboard() {
 
         {/* Features Grid */}
         <div style={styles.featureGrid}>
-          {currentFeatures.map((feature, index) => (
+          {features.map((feature, index) => (
             <div
               key={index}
               style={styles.featureCard}
@@ -628,9 +546,9 @@ export default function Dashboard() {
             >
               <div style={styles.featureTextContainer}>
                 <h3 style={styles.featureTitle}>{feature.title}</h3>
-                {feature.stats && (
-                  <div style={{ ...styles.featureStats, color: feature.color }}>
-                    {feature.stats}
+                {feature.statsText && (
+                  <div style={{ ...styles.featureStats, ...feature.statsStyle }}>
+                    {feature.statsText}
                   </div>
                 )}
               </div>
@@ -647,7 +565,7 @@ export default function Dashboard() {
           </p>
           <p style={{ marginTop: "0.5rem", fontSize: "0.875rem" }}>
             Currently viewing: {capitalizedRole} Dashboard (
-            {currentFeatures.length} features available)
+            {features.length} features available)
           </p>
         </footer>
       </div>
