@@ -23,6 +23,7 @@ export default function Dashboard() {
   const assignedStudents = localStorage.getItem("assigned_students");
   const totalUsers = localStorage.getItem("total_users");
 
+
   const navigate = useNavigate();
 
   // ============= AUTHENTICATION CHECK =============
