@@ -1,17 +1,15 @@
 // src/pages/Dashboard.js
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from 'axios';
+import axios from "axios";
 
 // ============= ICON =============
 import studentRoleIcon from "../assets/student-role-icon.png";
 import counselorRoleIcon from "../assets/counselor-role-icon.png";
 import adminRoleIcon from "../assets/admin-role-icon.png";
-import { getFeaturesByRole } from '../utils/roleFeatures';
+import { getFeaturesByRole } from "../utils/roleFeatures";
 
 export default function Dashboard() {
-  const navigate = useNavigate();
-
   // ============= GET LOCAL STORAGE USER DATA =============
   const fullName = localStorage.getItem("full_name");
   const role = localStorage.getItem("role");
@@ -24,7 +22,6 @@ export default function Dashboard() {
   const credits = localStorage.getItem("credits");
   const assignedStudents = localStorage.getItem("assigned_students");
   const totalUsers = localStorage.getItem("total_users");
-
 
   const navigate = useNavigate();
 
@@ -50,7 +47,6 @@ export default function Dashboard() {
   const [selectedFeature, setSelectedFeature] = useState(null);
   const gpa = userProfile?.cumulative_gpa ?? storedGpa;
 
-
   // ============= MEMOIZED FEATURES BASED ON USER ROLE/DATA =============
   const features = useMemo(() => {
     const currentUser = {
@@ -58,44 +54,47 @@ export default function Dashboard() {
       gpa: userProfile?.cumulative_gpa ?? storedGpa,
       credits,
       assignedStudents,
-      totalUsers
+      totalUsers,
     };
     return getFeaturesByRole(currentUser);
   }, [role, userProfile, storedGpa, credits, assignedStudents, totalUsers]);
 
   useEffect(() => {
-    const storedUsername = localStorage.getItem('username');
+    const storedUsername = localStorage.getItem("username");
     if (!storedUsername) {
-      console.warn('Username missing from localStorage.');
+      console.warn("Username missing from localStorage.");
       return;
     }
 
-    axios.get('http://localhost:8000/users/user-profiles/', {
-      withCredentials: true,
-      headers: { 'Content-Type': 'application/json' }
-    })
-    .then(res => {
-      const data = res.data;
-      const profile = Array.isArray(data)
-        ? data.find(p => p.username === storedUsername)
-        : null;
+    axios
+      .get("http://localhost:8000/users/user-profiles/", {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" },
+      })
+      .then((res) => {
+        const data = res.data;
+        const profile = Array.isArray(data)
+          ? data.find((p) => p.username === storedUsername)
+          : null;
 
-      if (profile) {
-        setUserProfile(profile);
-      } else {
-        console.warn('Profile not found for user:', storedUsername);
-      }
-    })
-    .catch(err => {
-      console.error('Error fetching profile:', err.response?.status, err.response?.data || err.message);
-    });
+        if (profile) {
+          setUserProfile(profile);
+        } else {
+          console.warn("Profile not found for user:", storedUsername);
+        }
+      })
+      .catch((err) => {
+        console.error(
+          "Error fetching profile:",
+          err.response?.status,
+          err.response?.data || err.message
+        );
+      });
   }, []);
 
+  // ============= GPA HANDLING moved to roleFeatures.js =============
 
-// ============= GPA HANDLING moved to roleFeatures.js =============
-
-
-// ============= ROLE-BASED FEATURES MOVED TO utils/roleFeatures.js =============
+  // ============= ROLE-BASED FEATURES MOVED TO utils/roleFeatures.js =============
 
   // ============= HANDLERS =============
   const handleFeatureClick = (feature) => {
@@ -547,7 +546,9 @@ export default function Dashboard() {
               <div style={styles.featureTextContainer}>
                 <h3 style={styles.featureTitle}>{feature.title}</h3>
                 {feature.statsText && (
-                  <div style={{ ...styles.featureStats, ...feature.statsStyle }}>
+                  <div
+                    style={{ ...styles.featureStats, ...feature.statsStyle }}
+                  >
                     {feature.statsText}
                   </div>
                 )}
@@ -564,8 +565,8 @@ export default function Dashboard() {
             Engineering Project
           </p>
           <p style={{ marginTop: "0.5rem", fontSize: "0.875rem" }}>
-            Currently viewing: {capitalizedRole} Dashboard (
-            {features.length} features available)
+            Currently viewing: {capitalizedRole} Dashboard ({features.length}{" "}
+            features available)
           </p>
         </footer>
       </div>
