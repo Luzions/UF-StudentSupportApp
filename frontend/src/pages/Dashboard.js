@@ -26,7 +26,6 @@ export default function Dashboard() {
   const totalUsers = localStorage.getItem("total_users");
 
 
-  const navigate = useNavigate();
 
   // ============= AUTHENTICATION CHECK =============
   useEffect(() => {
