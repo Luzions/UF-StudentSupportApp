@@ -25,8 +25,28 @@ export default function Dashboard() {
   const assignedStudents = localStorage.getItem("assigned_students");
   const totalUsers = localStorage.getItem("total_users");
 
+
+  const navigate = useNavigate();
+
+  // ============= AUTHENTICATION CHECK =============
+  useEffect(() => {
+    if (!fullName || !role) {
+      navigate("/logged-out");
+    }
+  }, [fullName, role, navigate]);
+  // ============= NEW STATE MANAGEMENT  =============
+  const [userPreferences, setUserPreferences] = useState({
+    theme: localStorage.getItem("theme") || "light",
+    dashboardLayout: localStorage.getItem("dashboardLayout") || "grid",
+    notifications: localStorage.getItem("notifications") === "true" || true,
+  });
+
+  // UI State
+  const [currentTab, setCurrentTab] = useState("dashboard");
+
   // ============= USER PROFILE FETCHING =============
   const [userProfile, setUserProfile] = useState(null);
+
   const [selectedFeature, setSelectedFeature] = useState(null);
   const gpa = userProfile?.cumulative_gpa ?? storedGpa;
 
@@ -88,7 +108,7 @@ export default function Dashboard() {
 
   const handleLogout = () => {
     localStorage.clear();
-    navigate("/login");
+    navigate("/logged-out");
   };
 
   // ============= STYLES =============
