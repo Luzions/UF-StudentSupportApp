@@ -160,6 +160,12 @@ export default function UserPage() {
         </button>
       </div>
 
+      <hr style={{
+        marginBottom: '2rem',
+        border: 'none',
+        borderTop: '1px solid #cbd5e1'
+      }} />
+
       {isCounselor && (
         <div style={{ marginBottom: '1rem' }}>
           <label>Select College:</label>

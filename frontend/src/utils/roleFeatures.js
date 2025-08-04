@@ -38,7 +38,7 @@ export function getFeaturesByRole(user) {
           "Access mental health resources, mood tracking, and wellness check-ins.",
         color: "#8B5CF6",
         stats: "Last check-in: 2 days ago",
-        route: "/alertsResources",
+        route: "/wellness",
       },
       {
         title: "Course Mapping",
@@ -75,7 +75,7 @@ export function getFeaturesByRole(user) {
           "Monitor student wellness metrics and intervention recommendations.",
         color: "#10B981",
         stats: "12 students need attention",
-        route: "/alertsResources",
+        route: "/wellness",
       },
       {
         title: "Appointment Scheduling",
