@@ -27,6 +27,13 @@ export default function Dashboard() {
   const totalUsers = localStorage.getItem("total_users");
 
   const navigate = useNavigate();
+
+  // ============= AUTHENTICATION CHECK =============
+  useEffect(() => {
+    if (!fullName || !role) {
+      navigate("/logged-out");
+    }
+  }, [fullName, role, navigate]);
   // ============= NEW STATE MANAGEMENT  =============
   const [userPreferences, setUserPreferences] = useState({
     theme: localStorage.getItem("theme") || "light",
@@ -183,7 +190,7 @@ export default function Dashboard() {
 
   const handleLogout = () => {
     localStorage.clear();
-    navigate("/login");
+    navigate("/logged-out");
   };
 
   // ============= STYLES =============
