@@ -32,7 +32,7 @@ UF-StudentSupportApp is a personal wellness companion for UF students, designed 
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-org/UF-StudentSupportApp.git
+git clone https://github.com/Luzions/UF-StudentSupportApp 
 cd UF-StudentSupportApp
 git checkout development
 git pull origin development

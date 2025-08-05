@@ -115,13 +115,13 @@ const ProfileCard = ({ profile, currentUser, isCounselor, onUpdate, onDelete }) 
       {profile.role.toLowerCase() === 'student' && (
         <>
           <EditableField
-            label="GPA"
-            value={localData.cumulative_gpa}
-            type="number"
-            disabled={!isEditing || !canEdit}
-            onChange={(val) =>
-              setLocalData(prev => ({ ...prev, cumulative_gpa: val }))
-            }
+              label="GPA"
+              value={localData.cumulative_gpa ?? profile.cumulative_gpa}
+              type="number"
+              disabled={!isCounselor || !isEditing} //
+              onChange={(val) =>
+                setLocalData(prev => ({ ...prev, cumulative_gpa: val }))
+          }
           />
           <EditableField
             label="Department"

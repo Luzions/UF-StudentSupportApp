@@ -161,6 +161,7 @@ export default function CourseMap() {
   };
 
   const handleBackToDashboard = () => {
+    navigate('/student-dashboard');
     console.log("Back to dashboard clicked");
   };
 
